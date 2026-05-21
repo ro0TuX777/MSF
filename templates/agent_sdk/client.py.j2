@@ -1,0 +1,406 @@
+"""{{ app_name }} SDK client — typed interface for agent consumption.
+{% if governance_mode == "full" %}
+
+Handles session lifecycle (create / refresh / expire), automatic retries
+for transient errors, budget pre-checks, and typed error mapping.
+{% elif governance_mode == "session_only" %}
+
+Handles session lifecycle (create / refresh / expire), automatic retries
+for transient errors, and typed error mapping.
+{% else %}
+
+Handles automatic retries for transient errors and typed error mapping.
+{% endif %}
+
+Usage::
+
+    from {{ app_slug }}_sdk import {{ app_pascal }}Client
+
+    client = {{ app_pascal }}Client("http://localhost:{{ default_port }}")
+{% if governance_mode != "stateless" %}
+    client.ensure_session()
+{% endif %}
+    result = client.health()
+"""
+
+from __future__ import annotations
+
+import logging
+import time
+from typing import Any, Dict, List, Optional
+
+import requests
+
+from {{ app_slug }}_sdk.config import {{ app_pascal }}Config
+from {{ app_slug }}_sdk.errors import (
+    {{ app_pascal }}Error,
+    ServiceUnavailableError,
+{% if governance_mode != "stateless" %}
+    SessionExpiredError,
+    SessionNotFoundError,
+{% endif %}
+    raise_for_error,
+)
+
+logger = logging.getLogger("{{ app_slug }}_sdk")
+
+
+class {{ app_pascal }}Client:
+    """Client for the {{ app_name }} API.
+
+    Parameters
+    ----------
+    base_url : str, optional
+        Service URL.  Falls back to ``{{ app_upper }}_BASE_URL`` env var,
+        then ``http://localhost:{{ default_port }}``.
+    config : {{ app_pascal }}Config, optional
+        Full config object.  If provided, ``base_url`` is ignored.
+    agent_class : str, optional
+        Agent class name for session creation.
+{% if governance_mode != "stateless" %}
+    auto_session : bool
+        If ``True`` (default), automatically create and refresh sessions.
+{% endif %}
+    """
+
+    def __init__(
+        self,
+        base_url: str | None = None,
+        config: {{ app_pascal }}Config | None = None,
+        agent_class: str | None = None,
+{% if governance_mode != "stateless" %}
+        auto_session: bool = True,
+{% endif %}
+    ):
+        if config is not None:
+            self._cfg = config
+        else:
+            self._cfg = {{ app_pascal }}Config.from_env()
+            if base_url:
+                self._cfg.base_url = base_url.rstrip("/")
+            if agent_class:
+                self._cfg.agent_class = agent_class
+
+        self._base = self._cfg.base_url.rstrip("/")
+{% if governance_mode != "stateless" %}
+        self._auto_session = auto_session
+        self._session_id: Optional[str] = None
+        self._session_meta: Dict[str, Any] = {}
+{% endif %}
+        self._http = requests.Session()
+        self._http.headers.update({
+            "Content-Type": "application/json",
+            "User-Agent": "{{ app_slug }}-sdk/0.1.0",
+        })
+
+    # ═══════════════════════════════════════════════════════════════
+    # INVARIANT CORE — same for every application
+    # ═══════════════════════════════════════════════════════════════
+
+    def _url(self, path: str) -> str:
+        return f"{self._base}{{ api_base_path }}{path}"
+
+    def _request(
+        self,
+        method: str,
+        path: str,
+        json_body: Dict[str, Any] | None = None,
+        params: Dict[str, Any] | None = None,
+        retries: int | None = None,
+    ) -> Dict[str, Any]:
+        """Execute an HTTP request with retry and error handling."""
+        max_retries = retries if retries is not None else self._cfg.retries
+        url = self._url(path)
+        last_exc: Exception | None = None
+
+        for attempt in range(max_retries + 1):
+            try:
+                resp = self._http.request(
+                    method,
+                    url,
+                    json=json_body,
+                    params=params,
+                    timeout=self._cfg.timeout_s,
+                )
+                body = resp.json()
+{% if governance_mode != "stateless" %}
+
+                # Auto-handle session expiry with retry
+                if (
+                    not body.get("ok")
+                    and self._auto_session
+                    and body.get("error", {}).get("code") in ("SESSION_EXPIRED", "SESSION_NOT_FOUND")
+                    and attempt < max_retries
+                ):
+                    logger.info("Session expired/missing — creating new session and retrying")
+                    self._create_session()
+                    if json_body and "session_id" in json_body:
+                        json_body["session_id"] = self._session_id
+                    if params and "session_id" in params:
+                        params["session_id"] = self._session_id
+                    continue
+{% endif %}
+
+                # Raise typed exceptions for API errors
+                raise_for_error(body)
+                return body
+
+            except requests.ConnectionError as exc:
+                last_exc = exc
+                if attempt < max_retries:
+                    delay = self._cfg.retry_delay_s * (2 ** attempt)
+                    logger.warning(
+                        "Connection to {{ app_name }} failed (attempt %d/%d), retrying in %.1fs",
+                        attempt + 1, max_retries + 1, delay,
+                    )
+                    time.sleep(delay)
+                    continue
+                raise ServiceUnavailableError(
+                    message=f"Cannot connect to {{ app_name }} at {self._base}: {exc}",
+                ) from exc
+
+            except requests.Timeout as exc:
+                last_exc = exc
+                if attempt < max_retries:
+                    delay = self._cfg.retry_delay_s * (2 ** attempt)
+                    logger.warning(
+                        "{{ app_name }} request timed out (attempt %d/%d), retrying in %.1fs",
+                        attempt + 1, max_retries + 1, delay,
+                    )
+                    time.sleep(delay)
+                    continue
+                raise ServiceUnavailableError(
+                    message=f"Request to {{ app_name }} timed out after {self._cfg.timeout_s}s",
+                ) from exc
+
+        # Safety net
+        raise ServiceUnavailableError(
+            message=f"All {max_retries + 1} attempts failed: {last_exc}",
+        )
+
+{% if governance_mode != "stateless" %}
+    # ═══════════════════════════════════════════════════════════════
+    # SESSION LIFECYCLE
+    # ═══════════════════════════════════════════════════════════════
+
+    def _create_session(self) -> str:
+        """Create a new session."""
+        body = self._request(
+            "POST", "{{ session_create_path }}",
+            json_body={
+                "agent_class": self._cfg.agent_class,
+                "mode": "unattended",
+                "entry_point": "sdk",
+                "ttl_minutes": self._cfg.session_ttl_minutes,
+{% if governance_mode == "full" %}
+                "trust_tier": self._cfg.trust_tier,
+{% endif %}
+            },
+            retries=0,  # Don't retry session creation recursively
+        )
+        self._session_id = body["{{ session_id_field }}"]
+        self._session_meta = body
+        logger.info("Created session %s", self._session_id)
+        return self._session_id
+
+    def ensure_session(self, force: bool = False) -> str:
+        """Return a valid session_id, creating one if needed.
+
+        Parameters
+        ----------
+        force : bool
+            If ``True``, discard any existing session and create a fresh one.
+
+        Returns
+        -------
+        str
+            Active session ID.
+        """
+        if force or self._session_id is None:
+            return self._create_session()
+        return self._session_id
+
+    def refresh_session(self, extension_ms: int = 3600000) -> Dict[str, Any]:
+        """Extend the current session's TTL.
+
+        Parameters
+        ----------
+        extension_ms : int
+            Extension duration in milliseconds (default: 1 hour).
+        """
+        sid = self.ensure_session()
+        return self._request("POST", "{{ session_refresh_path }}", json_body={
+            "session_id": sid,
+            "requested_extension_ms": extension_ms,
+        })
+
+    @property
+    def session_id(self) -> Optional[str]:
+        """Current session ID, or None if no session exists."""
+        return self._session_id
+
+{% endif %}
+    # ═══════════════════════════════════════════════════════════════
+    # ACTION METHODS
+    # ═══════════════════════════════════════════════════════════════
+{% if governance_mode != "stateless" %}
+
+    def submit_intent(
+        self,
+        action: str,
+        parameters: Dict[str, Any] | None = None,
+        idempotency_key: str | None = None,
+    ) -> Dict[str, Any]:
+        """Submit a governed action through the admission pipeline.
+
+        Parameters
+        ----------
+        action : str
+            Action name (e.g., ``"run_scan"``).
+        parameters : dict, optional
+            Action-specific parameters.
+        idempotency_key : str, optional
+            Idempotency key to prevent duplicate execution.
+        """
+        sid = self.ensure_session()
+        payload: Dict[str, Any] = {
+            "session_id": sid,
+            "action": action,
+            "parameters": parameters or {},
+        }
+        if idempotency_key:
+            payload["idempotency_key"] = idempotency_key
+        return self._request("POST", "{{ intent_endpoint }}", json_body=payload)
+
+{% endif %}
+{% for action in actions %}
+    def {{ action.name }}(self{{ action.params_signature }}) -> Dict[str, Any]:
+        """{{ action.description }}
+{% for param in action.parameters %}
+
+        Parameters
+        ----------
+        {{ param.name }} : {{ param.type }}
+{% if not param.required %}
+            Optional.{% if param.default is defined %} Default: {{ param.default }}.{% endif %}
+
+{% endif %}
+{% endfor %}
+        """
+{% if governance_mode != "stateless" and action.requires_session %}
+        sid = self.ensure_session()
+{% endif %}
+{% if action.intent_action %}
+        params: Dict[str, Any] = {
+{% for param in action.parameters %}
+{% if param.required %}
+            "{{ param.name }}": {{ param.name }},
+{% endif %}
+{% endfor %}
+        }
+{% for param in action.parameters %}
+{% if not param.required %}
+        if {{ param.name }} is not None:
+            params["{{ param.name }}"] = {{ param.name }}
+{% endif %}
+{% endfor %}
+        return self.submit_intent("{{ action.intent_action }}", parameters=params)
+{% else %}
+        payload: Dict[str, Any] = {
+{% if governance_mode != "stateless" and action.requires_session %}
+            "session_id": sid,
+{% endif %}
+{% for param in action.parameters %}
+{% if param.required %}
+            "{{ param.name }}": {{ param.name }},
+{% endif %}
+{% endfor %}
+        }
+{% for param in action.parameters %}
+{% if not param.required %}
+        if {{ param.name }} is not None:
+            payload["{{ param.name }}"] = {{ param.name }}
+{% endif %}
+{% endfor %}
+        return self._request("{{ action.method }}", "{{ action.endpoint }}", json_body=payload)
+{% endif %}
+
+{% endfor %}
+{% if governance_mode == "full" %}
+    # ═══════════════════════════════════════════════════════════════
+    # GOVERNANCE INTROSPECTION
+    # ═══════════════════════════════════════════════════════════════
+
+    def available_actions(
+        self,
+        family: str | None = None,
+        tag: str | None = None,
+    ) -> List[Dict[str, Any]]:
+        """List actions available to the current session."""
+        sid = self.ensure_session()
+        params: Dict[str, Any] = {"session_id": sid}
+        if family:
+            params["action_family"] = family
+        if tag:
+            params["tag"] = tag
+        body = self._request("GET", "/actions", params=params)
+        return body.get("available_actions", [])
+
+    def budget_status(self) -> Dict[str, Any]:
+        """Check remaining budget and circuit breaker state."""
+        sid = self.ensure_session()
+        return self._request("GET", "/budget/status", params={"session_id": sid})
+
+    def receipts(self) -> List[Dict[str, Any]]:
+        """Get the audit trail for the current session."""
+        sid = self.ensure_session()
+        body = self._request("GET", f"/receipts/{sid}")
+        return body.get("receipts", [])
+
+{% endif %}
+    # ═══════════════════════════════════════════════════════════════
+    # HEALTH CHECK
+    # ═══════════════════════════════════════════════════════════════
+
+    def health(self) -> bool:
+        """Check if {{ app_name }} is reachable and responding.
+
+        Returns ``True`` if the host responds, ``False`` otherwise.
+        Does NOT require an active session.
+        """
+        try:
+            resp = self._http.get(
+                f"{self._base}{{ health_endpoint }}",
+                timeout=min(self._cfg.timeout_s, 5.0),
+            )
+            return resp.status_code == 200
+        except (requests.ConnectionError, requests.Timeout):
+            return False
+
+    # ═══════════════════════════════════════════════════════════════
+    # CONTEXT MANAGER
+    # ═══════════════════════════════════════════════════════════════
+
+    def __enter__(self) -> "{{ app_pascal }}Client":
+{% if governance_mode != "stateless" %}
+        self.ensure_session()
+{% endif %}
+        return self
+
+    def __exit__(self, *exc_info) -> None:
+        self._http.close()
+
+    def __repr__(self) -> str:
+        return (
+            "{{ app_pascal }}Client(base_url={base!r}, "
+{% if governance_mode != "stateless" %}
+            "session_id={sid!r}, "
+{% endif %}
+            "agent_class={agent!r})"
+        ).format(
+            base=self._base,
+{% if governance_mode != "stateless" %}
+            sid=self._session_id,
+{% endif %}
+            agent=self._cfg.agent_class,
+        )

@@ -1,0 +1,96 @@
+# Agent SDK Manifest Example
+#
+# This manifest defines everything scaffold_agent_sdk.py needs to generate
+# a complete agent-facing SDK for an application.
+#
+# Usage:
+#   python tools/scaffold_agent_sdk.py --from-manifest examples/agent_sdk_manifest_example.yaml --output ./myapp_sdk/
+
+# ── Service configuration ─────────────────────────────────────────
+service:
+  app_name: "MyApp"                           # Human-readable name
+  app_slug: "myapp"                           # Used in: module name, env prefix
+  default_port: 5000                          # Default service port
+  api_base_path: "/api/v1"                    # API URL prefix
+  health_endpoint: "/api/v1/health"           # Non-authenticated liveness probe
+
+  # Governance mode: "full" | "session_only" | "stateless"
+  #
+  #   full         — CONCORD or equivalent: sessions + trust + budgets + guards
+  #   session_only — Sessions and basic auth, no budget/trust/guards
+  #   stateless    — No sessions at all, pure REST
+  governance_mode: "full"
+
+  # Session endpoints (only used when governance_mode != "stateless")
+  session_create_endpoint: "/session"
+  session_refresh_endpoint: "/session/refresh"
+  session_id_field: "session_id"
+
+  # Intent endpoint (only used when governance_mode != "stateless")
+  intent_endpoint: "/intent"
+
+# ── Actions ───────────────────────────────────────────────────────
+# Each action becomes a typed method on the generated client.
+actions:
+  - name: "process_document"
+    description: "Submit a document for processing"
+    method: "POST"
+    endpoint: "/process"
+    requires_session: true
+    # If intent_action is set, the method wraps submit_intent()
+    # If not set, the method calls the endpoint directly
+    intent_action: ""
+    parameters:
+      - name: "document_path"
+        type: "str"
+        required: true
+      - name: "output_format"
+        type: "str"
+        required: false
+        default: '"pdf"'
+
+  - name: "search"
+    description: "Semantic search across indexed documents"
+    method: "POST"
+    endpoint: "/intent"
+    requires_session: true
+    intent_action: "semantic_search"
+    parameters:
+      - name: "query"
+        type: "str"
+        required: true
+      - name: "limit"
+        type: "int"
+        required: false
+        default: "20"
+
+  - name: "get_status"
+    description: "Check processing status for a job"
+    method: "GET"
+    endpoint: "/status"
+    requires_session: false
+    intent_action: ""
+    parameters:
+      - name: "job_id"
+        type: "str"
+        required: true
+
+# ── Custom Error Codes ────────────────────────────────────────────
+# Additional error codes beyond the built-in ones.
+# Built-in codes (auto-included based on governance_mode):
+#   full:         SESSION_EXPIRED, SESSION_NOT_FOUND, BUDGET_EXCEEDED,
+#                 CIRCUIT_OPEN, TRUST_INSUFFICIENT, GUARD_FAILED
+#   session_only: SESSION_EXPIRED, SESSION_NOT_FOUND
+#   stateless:    (none — only HTTP status codes)
+#
+# Always included: ACTION_NOT_FOUND, INVALID_PARAMETERS, EXECUTION_FAILED
+errors:
+  - code: "DOCUMENT_TOO_LARGE"
+    exception: "DocumentTooLargeError"
+    description: "Document exceeds maximum allowed size"
+    agent_should: "Split the document into smaller parts or reduce file size"
+
+  - code: "FORMAT_UNSUPPORTED"
+    exception: "FormatUnsupportedError"
+    description: "Document format is not supported"
+    agent_should: "Convert the document to a supported format (PDF, DOCX, TXT)"

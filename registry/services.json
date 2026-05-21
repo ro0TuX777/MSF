@@ -1,0 +1,15 @@
+{
+  "services": [
+    {
+      "name": "example-service",
+      "base_url_envs": [
+        "MFS_EXAMPLE_BASE_URL"
+      ],
+      "default_base_url": "http://localhost:8610",
+      "health_path": "/health",
+      "contract_path": "/v1/example/capabilities",
+      "contract_file": "contracts/example_v1.json"
+    }
+  ]
+}
+

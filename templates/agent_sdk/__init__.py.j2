@@ -1,0 +1,59 @@
+"""{{ app_name }} SDK — typed client for agent consumption.
+
+Usage:
+    from {{ app_slug }}_sdk import {{ app_pascal }}Client
+
+    client = {{ app_pascal }}Client("http://localhost:{{ default_port }}")
+{% if governance_mode != "stateless" %}
+    client.ensure_session()
+{% endif %}
+    print(client.health())
+"""
+
+__version__ = "0.1.0"
+
+from {{ app_slug }}_sdk.client import {{ app_pascal }}Client
+from {{ app_slug }}_sdk.config import {{ app_pascal }}Config
+from {{ app_slug }}_sdk.errors import (
+    {{ app_pascal }}Error,
+{% if governance_mode != "stateless" %}
+    SessionExpiredError,
+    SessionNotFoundError,
+{% endif %}
+{% if governance_mode == "full" %}
+    BudgetExceededError,
+    CircuitOpenError,
+    TrustInsufficientError,
+    GuardFailedError,
+{% endif %}
+{% for error in custom_errors %}
+    {{ error.exception }},
+{% endfor %}
+    ActionNotFoundError,
+    InvalidParametersError,
+    ExecutionFailedError,
+    ServiceUnavailableError,
+)
+
+__all__ = [
+    "{{ app_pascal }}Client",
+    "{{ app_pascal }}Config",
+    "{{ app_pascal }}Error",
+{% if governance_mode != "stateless" %}
+    "SessionExpiredError",
+    "SessionNotFoundError",
+{% endif %}
+{% if governance_mode == "full" %}
+    "BudgetExceededError",
+    "CircuitOpenError",
+    "TrustInsufficientError",
+    "GuardFailedError",
+{% endif %}
+{% for error in custom_errors %}
+    "{{ error.exception }}",
+{% endfor %}
+    "ActionNotFoundError",
+    "InvalidParametersError",
+    "ExecutionFailedError",
+    "ServiceUnavailableError",
+]

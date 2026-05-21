@@ -1,0 +1,41 @@
+﻿"""MFS $feature_slug service."""
+
+from __future__ import annotations
+
+import datetime as dt
+import os
+
+from flask import Flask, jsonify
+
+CONTRACT_VERSION = "v1"
+FEATURE = "$feature_key"
+
+app = Flask(__name__)
+
+
+def _utc_now() -> str:
+    return dt.datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+
+
+@app.get("/health")
+def health():
+    return jsonify({"status": "ok", "service": "$service_name", "contract_version": CONTRACT_VERSION}), 200
+
+
+@app.get("$endpoint")
+def capabilities():
+    return jsonify(
+        {
+            "contract_version": CONTRACT_VERSION,
+            "status": "healthy",
+            "source": "$service_source",
+            "generated_at": _utc_now(),
+            "feature": FEATURE,
+            "supports": ["health", "capabilities"],
+            "error": None,
+        }
+    ), 200
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.getenv("$port_env", "$port")))

@@ -1,0 +1,1 @@
+{"endpoints": {"POST /api/payments": {"risk_category": "critical", "required_controls": ["strict_authorization", "operator_approval"]}}}

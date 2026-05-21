@@ -1,0 +1,15 @@
+﻿{
+  "service_name": "$service_name",
+  "contract_version": "v1",
+  "endpoint": "$endpoint",
+  "required_fields": {
+    "contract_version": "str",
+    "status": "str",
+    "source": "str",
+    "generated_at": "str",
+    "feature": "str",
+    "supports": "list",
+    "error": "nullable_str"
+  },
+  "allowed_status": ["healthy", "degraded", "unavailable"]
+}

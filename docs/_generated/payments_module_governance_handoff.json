@@ -1,0 +1,69 @@
+{
+  "schema_version": "msf.governance_handoff.v1",
+  "framework": "MSF",
+  "feature": "payments_module",
+  "service_id": "internal-metrics-service",
+  "cutover_id": "payments_module_cutover_20260520",
+  "stage": "pre_promote",
+  "timestamp": "2026-05-20T20:26:33+00:00",
+  "host_app": {
+    "name": "legacy_host",
+    "language": "unknown"
+  },
+  "generated_artifacts": {
+    "contract_path": "I:\\MSF\\contracts\\payments_module_v1.json",
+    "service_registry_path": "I:\\MSF\\registry\\services.json",
+    "cutover_manifest_path": "I:\\MSF\\docs\\_generated\\high_risk_cutover.json",
+    "state_path": "I:\\MSF\\docs\\_generated\\high_risk_cutover.state.json"
+  },
+  "service_surface": {},
+  "risk_profile": {
+    "data_sensitivity": "high",
+    "governance_risk": "requires_policy",
+    "sensitive_domains": [
+      "payments",
+      "pii"
+    ],
+    "mutation_risk": "possible",
+    "auth_required": true,
+    "payment_touching": true,
+    "pii_touching": true,
+    "protected_endpoints": {
+      "POST /api/payments": {
+        "risk_category": "critical",
+        "required_controls": [
+          "strict_authorization",
+          "operator_approval"
+        ]
+      }
+    }
+  },
+  "parity_summary": {
+    "status": "PASS",
+    "reason": "All parity thresholds met",
+    "total_samples": 30,
+    "global_match_rate": 1.0,
+    "endpoints": {
+      "GET /api/health": {
+        "criticality": "read_nonsensitive",
+        "threshold": 0.95,
+        "match_rate": 1.0,
+        "total": 30,
+        "mismatched_keys": [],
+        "pass": true
+      }
+    }
+  },
+  "rollback_readiness": {},
+  "requested_action": {
+    "action_type": "msf.approval_packet.promote",
+    "target_resource": "service:internal-metrics-service",
+    "stage": "canary_5"
+  },
+  "artifact_hashes": {
+    "contract_sha256": "",
+    "service_registry_sha256": "de02889f7c3541bcd641e8a5907627f751688d266c191ebd8018012bf9244ed8",
+    "cutover_manifest_sha256": "26c0acd0b6bd007f60f4ffeb1ed93ec577faf9dd534e7ed85ff0b25d8348e100"
+  },
+  "state_history_hash": "6145548298025467512"
+}

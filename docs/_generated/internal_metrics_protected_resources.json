@@ -1,0 +1,14 @@
+{
+  "schema_version": "msf.protected_resources.v1",
+  "risk_profile": {
+    "data_sensitivity": "low",
+    "governance_risk": "standard",
+    "sensitive_domains": []
+  },
+  "endpoints": {
+    "GET /api/health": {
+      "risk_level": "low",
+      "domains": []
+    }
+  }
+}

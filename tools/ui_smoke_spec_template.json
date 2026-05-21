@@ -1,0 +1,37 @@
+﻿{
+  "name": "example-ui-smoke",
+  "base_url": "http://localhost:8502",
+  "default_timeout_s": 5,
+  "default_headers": {
+    "Accept": "application/json"
+  },
+  "checks": [
+    {
+      "name": "root-responds",
+      "method": "GET",
+      "path": "/",
+      "expect_status_in": [200, 302]
+    },
+    {
+      "name": "health-endpoint",
+      "method": "GET",
+      "path": "/health",
+      "expect_status": 200,
+      "contains": "ok"
+    },
+    {
+      "name": "feature-capabilities",
+      "method": "GET",
+      "path": "/v1/example-feature/capabilities",
+      "expect_status": 200,
+      "expect_json_paths": {
+        "status": "healthy"
+      },
+      "expect_json_has_paths": [
+        "contract_version",
+        "feature",
+        "supports"
+      ]
+    }
+  ]
+}

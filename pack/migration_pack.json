@@ -1,0 +1,1393 @@
+{
+  "metadata": {
+    "generated_at": "2026-05-20T20:26:33+00:00",
+    "workspace": "I:\\MSF",
+    "discovery_dir": "I:\\MSF\\discovery",
+    "output_dir": "I:\\MSF\\pack"
+  },
+  "summary": {
+    "candidate_source": "candidate_scores",
+    "candidate_rows_total": 0,
+    "top_candidates_count": 0,
+    "boundary_stub_count": 0,
+    "missing_critical_artifacts": [
+      "intake",
+      "plan",
+      "candidate_scores",
+      "migration_report",
+      "runtime_signals"
+    ],
+    "snippet_candidate_count": 0
+  },
+  "artifacts": {
+    "intake": {
+      "path": "I:\\MSF\\migration_intake.md",
+      "exists": false,
+      "size_bytes": null
+    },
+    "plan": {
+      "path": "I:\\MSF\\migration_plan.md",
+      "exists": false,
+      "size_bytes": null
+    },
+    "context_manifest": {
+      "path": "I:\\MSF\\context_manifest.json",
+      "exists": false,
+      "size_bytes": null
+    },
+    "ai_start": {
+      "path": "I:\\MSF\\AI_DEV_START.md",
+      "exists": false,
+      "size_bytes": null
+    },
+    "sequence_script": {
+      "path": "I:\\MSF\\run_mfs_sequence.ps1",
+      "exists": false,
+      "size_bytes": null
+    },
+    "candidate_scores": {
+      "path": "I:\\MSF\\discovery\\candidate_scores.csv",
+      "exists": false,
+      "size_bytes": null
+    },
+    "merged_candidate_scores": {
+      "path": "I:\\MSF\\discovery\\merged_candidate_scores.csv",
+      "exists": false,
+      "size_bytes": null
+    },
+    "migration_report": {
+      "path": "I:\\MSF\\discovery\\migration_report.md",
+      "exists": false,
+      "size_bytes": null
+    },
+    "score_results": {
+      "path": "I:\\MSF\\discovery\\score_results.json",
+      "exists": false,
+      "size_bytes": null
+    },
+    "discovery_summary": {
+      "path": "I:\\MSF\\discovery\\discovery_summary.json",
+      "exists": false,
+      "size_bytes": null
+    },
+    "runtime_signals": {
+      "path": "I:\\MSF\\runtime_signals.csv",
+      "exists": false,
+      "size_bytes": null
+    },
+    "ui_parity_checklist": {
+      "path": "I:\\MSF\\ui_parity_checklist.json",
+      "exists": false,
+      "size_bytes": null
+    },
+    "ui_smoke_spec": {
+      "path": "I:\\MSF\\ui_smoke_spec.json",
+      "exists": false,
+      "size_bytes": null
+    },
+    "cutover_manifest": {
+      "path": "I:\\MSF\\cutover_manifest.json",
+      "exists": true,
+      "size_bytes": 1706
+    }
+  },
+  "boundary_stubs": [],
+  "top_candidates": [],
+  "code_snippets": {},
+  "recommended_commands": [],
+  "context_manifest": null,
+  "target_root": "I:\\",
+  "governance": {
+    "promote_approval_packet": {
+      "schema_version": "msf.governance_handoff.v1",
+      "framework": "MSF",
+      "feature": "internal-metrics",
+      "service_id": "internal-metrics-service",
+      "cutover_id": "internal-metrics_cutover_20260520",
+      "stage": "pre_promote",
+      "timestamp": "2026-05-20T20:26:33+00:00",
+      "host_app": {
+        "name": "legacy_host",
+        "language": "unknown"
+      },
+      "generated_artifacts": {
+        "contract_path": "I:\\MSF\\contracts\\internal-metrics_v1.json",
+        "service_registry_path": "I:\\MSF\\registry\\services.json",
+        "cutover_manifest_path": "I:\\MSF\\docs\\_generated\\internal_metrics_cutover.json",
+        "state_path": "I:\\MSF\\docs\\_generated\\internal_metrics_cutover.state.json"
+      },
+      "service_surface": {},
+      "risk_profile": {
+        "data_sensitivity": "low",
+        "governance_risk": "standard",
+        "sensitive_domains": []
+      },
+      "parity_summary": {
+        "status": "PASS",
+        "reason": "All parity thresholds met",
+        "total_samples": 30,
+        "global_match_rate": 1.0,
+        "endpoints": {
+          "GET /api/health": {
+            "criticality": "read_nonsensitive",
+            "threshold": 0.95,
+            "match_rate": 1.0,
+            "total": 30,
+            "mismatched_keys": [],
+            "pass": true
+          }
+        }
+      },
+      "rollback_readiness": {},
+      "requested_action": {
+        "action_type": "msf.approval_packet.final_cutover",
+        "target_resource": "service:internal-metrics-service",
+        "stage": "full_100"
+      },
+      "artifact_hashes": {
+        "contract_sha256": "",
+        "service_registry_sha256": "de02889f7c3541bcd641e8a5907627f751688d266c191ebd8018012bf9244ed8",
+        "cutover_manifest_sha256": "de7626019eb74972a722a01818e7c5959ca1215097ad3c71bef572f51743e47c"
+      },
+      "state_history_hash": "5266424966444549994"
+    },
+    "promote_decision": {
+      "decision": "ALLOW",
+      "reason": "Mocked decision: ALLOW",
+      "matched_policy": "default",
+      "required_action": "None",
+      "receipt_ref": "mock_receipt_allow"
+    },
+    "rollback_approval_packet": null,
+    "rollback_decision": null,
+    "protected_resources": {
+      "schema_version": "msf.protected_resources.v1",
+      "risk_profile": {
+        "data_sensitivity": "low",
+        "governance_risk": "standard",
+        "sensitive_domains": []
+      },
+      "endpoints": {
+        "GET /api/health": {
+          "risk_level": "low",
+          "domains": []
+        }
+      }
+    },
+    "policy_preview": null
+  },
+  "parity_report": {
+    "status": "PASS",
+    "reason": "All parity thresholds met",
+    "total_samples": 30,
+    "global_match_rate": 1.0,
+    "endpoints": {
+      "GET /api/health": {
+        "criticality": "read_nonsensitive",
+        "threshold": 0.95,
+        "match_rate": 1.0,
+        "total": 30,
+        "mismatched_keys": [],
+        "pass": true
+      }
+    }
+  },
+  "closeout_summary": {
+    "timeline": [
+      {
+        "timestamp": "2026-05-20T06:42:38+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_5",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T06:42:38+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_5"
+      },
+      {
+        "timestamp": "2026-05-20T06:42:38+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_5",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Mocked decision: ALLOW",
+          "matched_policy": "default",
+          "required_action": "None",
+          "receipt_ref": "mock_receipt_allow"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T06:42:38+00:00",
+        "action": "promote",
+        "stage": "canary_5",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T06:42:38+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_25",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T06:42:38+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_25"
+      },
+      {
+        "timestamp": "2026-05-20T06:42:38+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_25",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Mocked decision: ALLOW",
+          "matched_policy": "default",
+          "required_action": "None",
+          "receipt_ref": "mock_receipt_allow"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T06:42:38+00:00",
+        "action": "promote",
+        "stage": "canary_25",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T06:42:39+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "full_100",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T06:42:39+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "full_100"
+      },
+      {
+        "timestamp": "2026-05-20T06:42:39+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "full_100",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Mocked decision: ALLOW",
+          "matched_policy": "default",
+          "required_action": "None",
+          "receipt_ref": "mock_receipt_allow"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T06:42:39+00:00",
+        "action": "promote",
+        "stage": "full_100",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T10:33:50+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_5",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T10:33:50+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_5"
+      },
+      {
+        "timestamp": "2026-05-20T10:33:50+00:00",
+        "action": "msf.governance_admission.error",
+        "stage": "canary_5",
+        "decision_payload": {
+          "decision": "ERROR",
+          "reason": "HTTP request failed: Invalid URL '': No scheme supplied. Perhaps you meant https://?",
+          "matched_policy": "none",
+          "required_action": "Check ForgeRoot connectivity or adapter configuration",
+          "receipt_ref": null
+        },
+        "executed": true,
+        "ok": false
+      },
+      {
+        "timestamp": "2026-05-20T10:33:50+00:00",
+        "action": "msf.promotion.halted_by_governance",
+        "stage": "canary_5",
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T10:34:21+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_5",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T10:34:21+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_5"
+      },
+      {
+        "timestamp": "2026-05-20T10:34:21+00:00",
+        "action": "msf.governance_admission.error",
+        "stage": "canary_5",
+        "decision_payload": {
+          "decision": "ERROR",
+          "reason": "HTTP request failed: 400 Client Error: Bad Request for url: http://127.0.0.1:8081/api/v1/admit",
+          "matched_policy": "none",
+          "required_action": "Check ForgeRoot connectivity or adapter configuration",
+          "receipt_ref": null
+        },
+        "executed": true,
+        "ok": false
+      },
+      {
+        "timestamp": "2026-05-20T10:34:21+00:00",
+        "action": "msf.promotion.halted_by_governance",
+        "stage": "canary_5",
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T10:35:46+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_5",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T10:35:46+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_5"
+      },
+      {
+        "timestamp": "2026-05-20T10:35:46+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_5",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Deterministic E2E stub allowed low-risk MSF transport proof packet.",
+          "matched_policy": "msf_transport_stub_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "fr_receipt_stub_f92b7b4ce02f"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T10:35:46+00:00",
+        "action": "promote",
+        "stage": "canary_5",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T10:35:46+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_25",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T10:35:46+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_25"
+      },
+      {
+        "timestamp": "2026-05-20T10:35:46+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_25",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Deterministic E2E stub allowed low-risk MSF transport proof packet.",
+          "matched_policy": "msf_transport_stub_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "fr_receipt_stub_170169a1835d"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T10:35:46+00:00",
+        "action": "promote",
+        "stage": "canary_25",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T10:35:46+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "full_100",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T10:35:46+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "full_100"
+      },
+      {
+        "timestamp": "2026-05-20T10:35:46+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "full_100",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Deterministic E2E stub allowed low-risk MSF transport proof packet.",
+          "matched_policy": "msf_transport_stub_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "fr_receipt_stub_814b6a19fa87"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T10:35:46+00:00",
+        "action": "promote",
+        "stage": "full_100",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T10:44:17+00:00",
+        "action": "msf.promotion.halted_by_parity",
+        "reason": "parity_check_failed"
+      },
+      {
+        "timestamp": "2026-05-20T10:44:39+00:00",
+        "action": "msf.promotion.halted_by_parity",
+        "reason": "parity_check_failed"
+      },
+      {
+        "timestamp": "2026-05-20T11:05:22+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_5",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:05:22+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_5"
+      },
+      {
+        "timestamp": "2026-05-20T11:05:23+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_5",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:903176ef269944ee3f7f699488450f6912ab2d7537b0393d80b8b054af5d0143"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:05:23+00:00",
+        "action": "promote",
+        "stage": "canary_5",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T11:05:25+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_25",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:05:25+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_25"
+      },
+      {
+        "timestamp": "2026-05-20T11:05:25+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_25",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:a94a8bc85745e9aa25a67787f7a1912fc89fb8d53d07494cdd686ee6077400e5"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:05:25+00:00",
+        "action": "promote",
+        "stage": "canary_25",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T11:05:27+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "full_100",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:05:27+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "full_100"
+      },
+      {
+        "timestamp": "2026-05-20T11:05:27+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "full_100",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:89386ce2290fcade1848fe0cf8ca1bc3b0e88d9377a6f81c2bf6606db6fda782"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:05:27+00:00",
+        "action": "promote",
+        "stage": "full_100",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T11:06:56+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_5",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:06:56+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_5"
+      },
+      {
+        "timestamp": "2026-05-20T11:06:56+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_5",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:3547ee1f51faa9bec3bccf4e0c72b556883f33ba972eda2a1c2ab830acc7444c"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:06:56+00:00",
+        "action": "promote",
+        "stage": "canary_5",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T11:06:56+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_25",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:06:56+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_25"
+      },
+      {
+        "timestamp": "2026-05-20T11:06:56+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_25",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:a46c12518e2f96d24a1f6a8625377f8848c7cbdf40298ab143070fb1543156b5"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:06:56+00:00",
+        "action": "promote",
+        "stage": "canary_25",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T11:06:57+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "full_100",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:06:57+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "full_100"
+      },
+      {
+        "timestamp": "2026-05-20T11:06:57+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "full_100",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:2b978f13afccb504693d7fc86ad9aa4d89c82d90054819b960e41c12a8b06647"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:06:57+00:00",
+        "action": "promote",
+        "stage": "full_100",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T11:08:38+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_5",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:08:38+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_5"
+      },
+      {
+        "timestamp": "2026-05-20T11:08:38+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_5",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:3f7c2f3c069061fb6b0c2a9e8096de0a7a524dc2d876476e04bce0f7009a7f3a"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:08:38+00:00",
+        "action": "promote",
+        "stage": "canary_5",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T11:08:38+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_25",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:08:38+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_25"
+      },
+      {
+        "timestamp": "2026-05-20T11:08:38+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_25",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:57acfec0fb03c981f50412d6bf77ad3a046406449794ca73229ad83a84fd86fa"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:08:38+00:00",
+        "action": "promote",
+        "stage": "canary_25",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T11:08:38+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "full_100",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:08:38+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "full_100"
+      },
+      {
+        "timestamp": "2026-05-20T11:08:38+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "full_100",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:247fb5567eeaf10de72217fc6b4f77b75c3eb67f3a07c230427aa92ff7c02e4c"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:08:38+00:00",
+        "action": "promote",
+        "stage": "full_100",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T11:10:02+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_5",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:10:02+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_5"
+      },
+      {
+        "timestamp": "2026-05-20T11:10:02+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_5",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:ea0cbeadc6fe09a6e0e9d2986928d5700e940517b469d6e72e99d6b79ba887df"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:10:02+00:00",
+        "action": "promote",
+        "stage": "canary_5",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T11:10:02+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_25",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:10:02+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_25"
+      },
+      {
+        "timestamp": "2026-05-20T11:10:02+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_25",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:6505f87e3fb903059f4ec52e266a7b2de180911fe567b141fc56928f23b52d48"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:10:02+00:00",
+        "action": "promote",
+        "stage": "canary_25",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T11:10:02+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "full_100",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:10:02+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "full_100"
+      },
+      {
+        "timestamp": "2026-05-20T11:10:02+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "full_100",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:2a384af8f97b4492fe4f3f9d92570f1fea7ba6136ef8e46adf9049584e9d73ba"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:10:02+00:00",
+        "action": "promote",
+        "stage": "full_100",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T11:10:50+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_5",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:10:50+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_5"
+      },
+      {
+        "timestamp": "2026-05-20T11:10:50+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_5",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:6dceea5a39e1a29ff3dd7e64a2f40d707aee4fdf1c827d75006c836b37ba7123"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:10:51+00:00",
+        "action": "promote",
+        "stage": "canary_5",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T11:10:51+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_25",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:10:51+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_25"
+      },
+      {
+        "timestamp": "2026-05-20T11:10:51+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_25",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:2ac2f44bc6b07a1eb63f84a1ca40307654ad65d2616f8b94e5a776b52b3e30f5"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:10:51+00:00",
+        "action": "promote",
+        "stage": "canary_25",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T11:10:51+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "full_100",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T11:10:51+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "full_100"
+      },
+      {
+        "timestamp": "2026-05-20T11:10:51+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "full_100",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:7cb43b02ab819a74264d3c8954a44663117481c01bb10a8ac5a181b577bccb4d"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T11:10:51+00:00",
+        "action": "promote",
+        "stage": "full_100",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T20:16:58+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_5",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T20:16:58+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_5"
+      },
+      {
+        "timestamp": "2026-05-20T20:16:58+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_5",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:436da6865c82af4b0610e5ef54347cb3df6b4c03cc687952036fd85e96b59718"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T20:16:58+00:00",
+        "action": "promote",
+        "stage": "canary_5",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T20:16:58+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_25",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T20:16:58+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_25"
+      },
+      {
+        "timestamp": "2026-05-20T20:16:58+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_25",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:597b84ead2325245251109a0685be96c02ddb577abe6a93901d490467a4d4288"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T20:16:58+00:00",
+        "action": "promote",
+        "stage": "canary_25",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T20:16:58+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "full_100",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T20:16:58+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "full_100"
+      },
+      {
+        "timestamp": "2026-05-20T20:16:58+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "full_100",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:e33c0c44024fadf19d1cba3b9de02f0b82b5603c5e9fcbe22920c3db900c122e"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T20:16:59+00:00",
+        "action": "promote",
+        "stage": "full_100",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T20:17:23+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_5",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T20:17:23+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_5"
+      },
+      {
+        "timestamp": "2026-05-20T20:17:23+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_5",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:4a6100d66f06bb26162b3f51479c45555480909a69107ba61f8316e2f2bda305"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T20:17:23+00:00",
+        "action": "promote",
+        "stage": "canary_5",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T20:17:24+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_25",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T20:17:24+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_25"
+      },
+      {
+        "timestamp": "2026-05-20T20:17:24+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_25",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:40d61a15cb0313e4aaf4c0a176783b48894f911e2a9d776d0b9a69843f998e00"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T20:17:24+00:00",
+        "action": "promote",
+        "stage": "canary_25",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T20:17:24+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "full_100",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T20:17:24+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "full_100"
+      },
+      {
+        "timestamp": "2026-05-20T20:17:24+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "full_100",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:46d5d334580289b729d2e3d1c0ea578fe8e7744e4c85a94faced17ff02824b4a"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T20:17:24+00:00",
+        "action": "promote",
+        "stage": "full_100",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T20:26:32+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_5",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T20:26:32+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_5"
+      },
+      {
+        "timestamp": "2026-05-20T20:26:32+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_5",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:44a0e245673b481b3a9b679d4a78764fc36e28b9f6e259be7381cacf047f4ea9"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T20:26:32+00:00",
+        "action": "promote",
+        "stage": "canary_5",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T20:26:33+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "canary_25",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T20:26:33+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "canary_25"
+      },
+      {
+        "timestamp": "2026-05-20T20:26:33+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "canary_25",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:313be54da3a87579b671be0f118268c12288370acea0fa77c0d717fe0b889a82"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T20:26:33+00:00",
+        "action": "promote",
+        "stage": "canary_25",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      },
+      {
+        "timestamp": "2026-05-20T20:26:33+00:00",
+        "action": "msf.governance_handoff.generated",
+        "stage": "full_100",
+        "handoff_file": "I:\\MSF\\docs\\_generated\\internal-metrics_governance_handoff.json"
+      },
+      {
+        "timestamp": "2026-05-20T20:26:33+00:00",
+        "action": "msf.governance_handoff.submitted",
+        "stage": "full_100"
+      },
+      {
+        "timestamp": "2026-05-20T20:26:33+00:00",
+        "action": "msf.governance_admission.allow",
+        "stage": "full_100",
+        "decision_payload": {
+          "decision": "ALLOW",
+          "reason": "Low-risk internal promotion met parity and rollback readiness policy.",
+          "matched_policy": "phase9_low_risk_allow_policy",
+          "required_action": "None",
+          "receipt_ref": "sha256:22d716de50fd30e27e15fa842ae54b056f1fe725e355c06001a759eb685749f0"
+        },
+        "executed": true,
+        "ok": true
+      },
+      {
+        "timestamp": "2026-05-20T20:26:33+00:00",
+        "action": "promote",
+        "stage": "full_100",
+        "ok": true,
+        "deploy_exit_code": 0,
+        "verify_exit_code": 0,
+        "gate_results": [],
+        "integration_results": [],
+        "executed": true
+      }
+    ],
+    "governance_decisions": {
+      "promote": {
+        "decision": "ALLOW",
+        "reason": "Mocked decision: ALLOW",
+        "matched_policy": "default",
+        "required_action": "None",
+        "receipt_ref": "mock_receipt_allow"
+      },
+      "rollback": null
+    },
+    "parity_results": {
+      "status": "PASS",
+      "reason": "All parity thresholds met",
+      "total_samples": 30,
+      "global_match_rate": 1.0,
+      "endpoints": {
+        "GET /api/health": {
+          "criticality": "read_nonsensitive",
+          "threshold": 0.95,
+          "match_rate": 1.0,
+          "total": 30,
+          "mismatched_keys": [],
+          "pass": true
+        }
+      }
+    },
+    "protected_resources": {
+      "schema_version": "msf.protected_resources.v1",
+      "risk_profile": {
+        "data_sensitivity": "low",
+        "governance_risk": "standard",
+        "sensitive_domains": []
+      },
+      "endpoints": {
+        "GET /api/health": {
+          "risk_level": "low",
+          "domains": []
+        }
+      }
+    },
+    "rollback_evidence": null,
+    "unresolved_risks": []
+  }
+}

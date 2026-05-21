@@ -1,0 +1,91 @@
+﻿{
+  "feature": "$feature_slug",
+  "service": "$service_name",
+  "environment": "dev",
+  "flag": {
+    "name": "$flag_name",
+    "mode": "percentage"
+  },
+  "gates": {
+    "ui_parity_checklist": "",
+    "ui_smoke_spec": "",
+    "ui_browser_spec": "",
+    "ui_checklist_fail_on_todo": false
+  },
+  "integrations": {
+    "flag_provider": {
+      "type": "",
+      "env_file": ".env",
+      "flag_key": "$flag_name",
+      "rollout": "",
+      "namespace": "default"
+    },
+    "deploy_provider": {
+      "type": "",
+      "compose_file": "docker-compose.yml",
+      "services": ["$service_name"],
+      "rollout": "",
+      "namespace": "default",
+      "image": ""
+    },
+    "flag_hook": {
+      "url": "",
+      "method": "POST",
+      "expect_status": 200,
+      "timeout_s": 5,
+      "headers": {}
+    },
+    "deploy_hook": {
+      "url": "",
+      "method": "POST",
+      "expect_status": 200,
+      "timeout_s": 10,
+      "headers": {}
+    },
+    "health_check": {
+      "url": "",
+      "expect_status": 200,
+      "timeout_s": 5
+    },
+    "slo_policy": {
+      "health_url": "",
+      "timeout_s": 5,
+      "latency_json_path": "metrics.latency_p95_ms",
+      "error_rate_json_path": "metrics.error_rate_pct",
+      "max_latency_p95_ms": 1200,
+      "max_error_rate_pct": 2.0
+    },
+    "rollback_hook": {
+      "url": "",
+      "method": "POST",
+      "expect_status": 200,
+      "timeout_s": 10,
+      "headers": {}
+    }
+  },
+  "stages": [
+    {
+      "name": "canary_5",
+      "percent": 5,
+      "deploy_command": "echo Deploy $service_name for 5%",
+      "verify_command": "echo Verify health and error budget",
+      "rollback_command": "echo Rollback $service_name to previous stable"
+    },
+    {
+      "name": "canary_25",
+      "percent": 25,
+      "deploy_command": "echo Deploy $service_name for 25%",
+      "verify_command": "echo Verify health and latency",
+      "rollback_command": "echo Rollback $service_name to previous stable"
+    },
+    {
+      "name": "full_100",
+      "percent": 100,
+      "deploy_command": "echo Deploy $service_name for 100%",
+      "verify_command": "echo Verify production readiness",
+      "rollback_command": "echo Rollback $service_name to previous stable"
+    }
+  ],
+  "global_rollback_command": "echo Global rollback for $service_name",
+  "notes": "Update commands, adapters, hooks, and SLO policy for your deployment stack before using --execute."
+}

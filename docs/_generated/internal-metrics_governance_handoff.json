@@ -1,0 +1,53 @@
+{
+  "schema_version": "msf.governance_handoff.v1",
+  "framework": "MSF",
+  "feature": "internal-metrics",
+  "service_id": "internal-metrics-service",
+  "cutover_id": "internal-metrics_cutover_20260520",
+  "stage": "pre_promote",
+  "timestamp": "2026-05-20T20:26:33+00:00",
+  "host_app": {
+    "name": "legacy_host",
+    "language": "unknown"
+  },
+  "generated_artifacts": {
+    "contract_path": "I:\\MSF\\contracts\\internal-metrics_v1.json",
+    "service_registry_path": "I:\\MSF\\registry\\services.json",
+    "cutover_manifest_path": "I:\\MSF\\docs\\_generated\\internal_metrics_cutover.json",
+    "state_path": "I:\\MSF\\docs\\_generated\\internal_metrics_cutover.state.json"
+  },
+  "service_surface": {},
+  "risk_profile": {
+    "data_sensitivity": "low",
+    "governance_risk": "standard",
+    "sensitive_domains": []
+  },
+  "parity_summary": {
+    "status": "PASS",
+    "reason": "All parity thresholds met",
+    "total_samples": 30,
+    "global_match_rate": 1.0,
+    "endpoints": {
+      "GET /api/health": {
+        "criticality": "read_nonsensitive",
+        "threshold": 0.95,
+        "match_rate": 1.0,
+        "total": 30,
+        "mismatched_keys": [],
+        "pass": true
+      }
+    }
+  },
+  "rollback_readiness": {},
+  "requested_action": {
+    "action_type": "msf.approval_packet.final_cutover",
+    "target_resource": "service:internal-metrics-service",
+    "stage": "full_100"
+  },
+  "artifact_hashes": {
+    "contract_sha256": "",
+    "service_registry_sha256": "de02889f7c3541bcd641e8a5907627f751688d266c191ebd8018012bf9244ed8",
+    "cutover_manifest_sha256": "de7626019eb74972a722a01818e7c5959ca1215097ad3c71bef572f51743e47c"
+  },
+  "state_history_hash": "5266424966444549994"
+}

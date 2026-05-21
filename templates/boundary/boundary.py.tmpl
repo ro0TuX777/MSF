@@ -1,0 +1,46 @@
+﻿"""Boundary for $feature_slug using MFS Boundary SDK."""
+
+from __future__ import annotations
+
+from typing import Any, Dict
+
+from boundary_sdk import BoundaryClient, BoundaryConfig
+
+
+class $class_name:
+    """Single entry/exit adapter for $feature_slug."""
+
+    def __init__(self) -> None:
+        cfg = BoundaryConfig.from_env("$env_prefix", default_base_url="$default_base_url")
+        self._client = BoundaryClient(cfg, source="$source_name")
+
+    def get_capabilities(self, *, force_refresh: bool = False) -> Dict[str, Any]:
+        return self._client.request_json("GET", "$capabilities_path", force_refresh=force_refresh)
+
+    def call(self, *, payload: Dict[str, Any] | None = None, force_refresh: bool = False) -> Dict[str, Any]:
+        return self._client.request_json(
+            "$call_method",
+            "$call_path",
+            payload=payload,
+            force_refresh=force_refresh,
+            fallback=self._local_fallback,
+        )
+
+    def _local_fallback(self, remote_error: str | None) -> Dict[str, Any]:
+        # Replace with host-app fallback logic if needed.
+        return {
+            "status": "degraded",
+            "source": "local_fallback",
+            "error": remote_error,
+            "result": None,
+        }
+
+
+_boundary: $class_name | None = None
+
+
+def $factory_name() -> $class_name:
+    global _boundary
+    if _boundary is None:
+        _boundary = $class_name()
+    return _boundary

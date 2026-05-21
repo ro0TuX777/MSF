@@ -1,0 +1,37 @@
+{
+  "current_stage": null,
+  "history": [
+    {
+      "timestamp": "2026-05-20T20:26:33+00:00",
+      "action": "msf.governance_handoff.generated",
+      "stage": "canary_5",
+      "handoff_file": "I:\\MSF\\docs\\_generated\\payments_module_governance_handoff.json"
+    },
+    {
+      "timestamp": "2026-05-20T20:26:33+00:00",
+      "action": "msf.governance_handoff.submitted",
+      "stage": "canary_5"
+    },
+    {
+      "timestamp": "2026-05-20T20:26:33+00:00",
+      "action": "msf.governance_admission.require_approval",
+      "stage": "canary_5",
+      "decision_payload": {
+        "decision": "REQUIRE_APPROVAL",
+        "reason": "High-risk payment or PII-adjacent promotion requires explicit operator approval.",
+        "matched_policy": "phase9_high_risk_operator_approval_policy",
+        "required_action": "Collect strict_authorization and operator_approval before promotion.",
+        "receipt_ref": "sha256:f6b098f9aff21497f019eb1208b59d690691e27c0370ed71a382f0835686cf7e"
+      },
+      "executed": true,
+      "ok": false
+    },
+    {
+      "timestamp": "2026-05-20T20:26:33+00:00",
+      "action": "msf.promotion.halted_by_governance",
+      "stage": "canary_5",
+      "executed": true
+    }
+  ],
+  "updated_at": "2026-05-20T20:26:33+00:00"
+}

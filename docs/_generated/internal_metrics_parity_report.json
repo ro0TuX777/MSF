@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "reason": "All parity thresholds met",
+  "total_samples": 30,
+  "global_match_rate": 1.0,
+  "endpoints": {
+    "GET /api/health": {
+      "criticality": "read_nonsensitive",
+      "threshold": 0.95,
+      "match_rate": 1.0,
+      "total": 30,
+      "mismatched_keys": [],
+      "pass": true
+    }
+  }
+}

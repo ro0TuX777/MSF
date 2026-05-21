@@ -1,0 +1,41 @@
+name: Migration Gates
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  migration-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Validate compose config
+        run: docker compose -f docker-compose.yml config > /dev/null
+
+      - name: Build service images
+        run: docker compose -f docker-compose.yml build example-service
+
+      - name: Start services for health audit
+        run: docker compose -f docker-compose.yml up -d example-service
+
+      - name: Run migration gates
+        run: |
+          python tools/ci_migration_gates.py \
+            --run-health-audit \
+            --ui-checklist tools/ui_parity_checklist_template.json
+
+      - name: Teardown services
+        if: always()
+        run: docker compose -f docker-compose.yml down --remove-orphans

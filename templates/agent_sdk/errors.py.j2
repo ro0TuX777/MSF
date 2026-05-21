@@ -1,0 +1,241 @@
+"""{{ app_name }} SDK exceptions — typed errors with agent_should guidance."""
+
+from __future__ import annotations
+
+from typing import Any, Dict, Optional
+
+
+class {{ app_pascal }}Error(Exception):
+    """Base exception for all {{ app_name }} SDK errors."""
+
+    def __init__(
+        self,
+        code: str,
+        message: str,
+        agent_should: str = "",
+        details: Optional[Dict[str, Any]] = None,
+    ):
+        self.code = code
+        self.message = message
+        self.agent_should = agent_should
+        self.details = details or {}
+        super().__init__(f"[{code}] {message}")
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "code": self.code,
+            "message": self.message,
+            "agent_should": self.agent_should,
+            "details": self.details,
+        }
+
+
+{% if governance_mode != "stateless" %}
+# ── Session errors ────────────────────────────────────────────────
+
+class SessionExpiredError({{ app_pascal }}Error):
+    """Session TTL has elapsed.  Agent should create a new session."""
+
+    def __init__(self, message: str = "Session has expired", **kw):
+        super().__init__(
+            code="SESSION_EXPIRED",
+            message=message,
+            agent_should="Create a new session via client.ensure_session(force=True)",
+            **kw,
+        )
+
+
+class SessionNotFoundError({{ app_pascal }}Error):
+    """Session ID does not exist."""
+
+    def __init__(self, message: str = "Session not found", **kw):
+        super().__init__(
+            code="SESSION_NOT_FOUND",
+            message=message,
+            agent_should="Create a new session — the previous one may have been cleaned up",
+            **kw,
+        )
+
+{% endif %}
+{% if governance_mode == "full" %}
+# ── Budget / circuit-breaker errors ───────────────────────────────
+
+class BudgetExceededError({{ app_pascal }}Error):
+    """Action budget exhausted."""
+
+    def __init__(self, message: str = "Budget exceeded", **kw):
+        super().__init__(
+            code="BUDGET_EXCEEDED",
+            message=message,
+            agent_should="Check budget_status() and choose a cheaper action, or wait for budget reset",
+            **kw,
+        )
+
+
+class CircuitOpenError({{ app_pascal }}Error):
+    """Circuit breaker tripped due to consecutive failures."""
+
+    def __init__(self, message: str = "Circuit breaker is open", **kw):
+        super().__init__(
+            code="CIRCUIT_OPEN",
+            message=message,
+            agent_should="Wait for cooldown period, then retry with a lighter action",
+            **kw,
+        )
+
+
+# ── Trust / authorization errors ─────────────────────────────────
+
+class TrustInsufficientError({{ app_pascal }}Error):
+    """Agent's trust tier is too low for the requested action."""
+
+    def __init__(self, message: str = "Trust tier insufficient", **kw):
+        super().__init__(
+            code="TRUST_INSUFFICIENT",
+            message=message,
+            agent_should="Request elevated trust via session config or choose a lower-trust action",
+            **kw,
+        )
+
+
+# ── Guard errors ─────────────────────────────────────────────────
+
+class GuardFailedError({{ app_pascal }}Error):
+    """One or more guards blocked the action."""
+
+    def __init__(self, message: str = "Guard check failed", **kw):
+        super().__init__(
+            code="GUARD_FAILED",
+            message=message,
+            agent_should="Check the guard failure reason in details and resolve the precondition",
+            **kw,
+        )
+
+{% endif %}
+{% for error in custom_errors %}
+class {{ error.exception }}({{ app_pascal }}Error):
+    """{{ error.description | default(error.code) }}"""
+
+    def __init__(self, message: str = "{{ error.code }}", **kw):
+        super().__init__(
+            code="{{ error.code }}",
+            message=message,
+            agent_should="{{ error.agent_should }}",
+            **kw,
+        )
+
+{% endfor %}
+# ── Action errors ─────────────────────────────────────────────────
+
+class ActionNotFoundError({{ app_pascal }}Error):
+    """Requested action does not exist in the registry."""
+
+    def __init__(self, message: str = "Action not found", **kw):
+        super().__init__(
+            code="ACTION_NOT_FOUND",
+            message=message,
+            agent_should="Call available_actions() to see what actions exist",
+            **kw,
+        )
+
+
+class InvalidParametersError({{ app_pascal }}Error):
+    """Parameters failed validation."""
+
+    def __init__(self, message: str = "Invalid parameters", **kw):
+        super().__init__(
+            code="INVALID_PARAMETERS",
+            message=message,
+            agent_should="Check the action's input schema and fix parameters",
+            **kw,
+        )
+
+
+class ExecutionFailedError({{ app_pascal }}Error):
+    """Executor raised an unexpected error."""
+
+    def __init__(self, message: str = "Execution failed", **kw):
+        super().__init__(
+            code="EXECUTION_FAILED",
+            message=message,
+            agent_should="Check details for the root cause; retry if the action is retryable",
+            **kw,
+        )
+
+
+# ── Connectivity errors ──────────────────────────────────────────
+
+class ServiceUnavailableError({{ app_pascal }}Error):
+    """{{ app_name }} host is unreachable."""
+
+    def __init__(self, message: str = "{{ app_name }} service unavailable", **kw):
+        super().__init__(
+            code="SERVICE_UNAVAILABLE",
+            message=message,
+            agent_should="Verify {{ app_name }} container is running and the base URL is correct",
+            **kw,
+        )
+
+
+# ── Error code → exception class mapping ─────────────────────────
+
+_CODE_MAP: Dict[str, type] = {
+{% if governance_mode != "stateless" %}
+    "SESSION_EXPIRED": SessionExpiredError,
+    "SESSION_NOT_FOUND": SessionNotFoundError,
+{% endif %}
+{% if governance_mode == "full" %}
+    "BUDGET_EXCEEDED": BudgetExceededError,
+    "CIRCUIT_OPEN": CircuitOpenError,
+    "TRUST_INSUFFICIENT": TrustInsufficientError,
+    "GUARD_FAILED": GuardFailedError,
+{% endif %}
+{% for error in custom_errors %}
+    "{{ error.code }}": {{ error.exception }},
+{% endfor %}
+    "ACTION_NOT_FOUND": ActionNotFoundError,
+    "INVALID_PARAMETERS": InvalidParametersError,
+    "EXECUTION_FAILED": ExecutionFailedError,
+}
+
+# ── HTTP status code fallback map ─────────────────────────────────
+
+_STATUS_MAP: Dict[int, type] = {
+    400: InvalidParametersError,
+    404: ActionNotFoundError,
+    429: {{ app_pascal }}Error,  # Rate limited
+    500: ExecutionFailedError,
+    503: ServiceUnavailableError,
+}
+
+
+def raise_for_error(response_json: Dict[str, Any]) -> None:
+    """Inspect a response and raise the appropriate typed exception.
+
+    If ``response_json["ok"]`` is ``True`` this is a no-op.
+    """
+    if response_json.get("ok"):
+        return
+
+    error = response_json.get("error", {})
+    if isinstance(error, str):
+        raise {{ app_pascal }}Error(code="UNKNOWN", message=error)
+
+    code = error.get("code", "UNKNOWN") if isinstance(error, dict) else "UNKNOWN"
+    message = error.get("message", str(error)) if isinstance(error, dict) else str(error)
+
+    exc_cls = _CODE_MAP.get(code, {{ app_pascal }}Error)
+    if exc_cls is {{ app_pascal }}Error:
+        raise exc_cls(code=code, message=message, details={"raw_error": error})
+    raise exc_cls(message=message, details={"raw_error": error})
+
+
+def raise_for_status(status_code: int, response_body: Any = None) -> None:
+    """Raise from HTTP status code when no structured error body is available."""
+    if 200 <= status_code < 300:
+        return
+    exc_cls = _STATUS_MAP.get(status_code, {{ app_pascal }}Error)
+    message = str(response_body) if response_body else f"HTTP {status_code}"
+    if exc_cls is {{ app_pascal }}Error:
+        raise exc_cls(code=f"HTTP_{status_code}", message=message)
+    raise exc_cls(message=message)

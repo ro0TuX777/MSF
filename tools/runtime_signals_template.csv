@@ -1,0 +1,4 @@
+﻿name,p95_latency_ms,error_rate_pct,requests_per_min,change_events_30d
+feature-a,350,0.8,120,18
+feature-b,1200,3.4,40,45
+feature-c,2200,6.2,15,70

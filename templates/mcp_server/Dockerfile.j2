@@ -1,0 +1,10 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY server.py .
+ENV {{ env_prefix }}_BASE_URL="{{ default_base_url }}"
+ENV MCP_TRANSPORT="sse"
+ENV MCP_PORT="{{ mcp_port }}"
+EXPOSE {{ mcp_port }}
+CMD ["python", "server.py", "--transport", "sse"]

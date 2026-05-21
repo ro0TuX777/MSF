@@ -1,0 +1,58 @@
+"""{{ app_name }} SDK configuration — loaded from environment variables."""
+
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass
+
+
+@dataclass
+class {{ app_pascal }}Config:
+    """Configuration for the {{ app_name }} SDK client.
+
+    Environment variables:
+        {{ app_upper }}_BASE_URL       — Service URL (default: http://localhost:{{ default_port }})
+        {{ app_upper }}_AGENT_CLASS    — Agent class name (default: default_agent)
+        {{ app_upper }}_TIMEOUT_S      — HTTP request timeout in seconds (default: 30)
+        {{ app_upper }}_RETRIES        — Max retries for transient failures (default: 2)
+        {{ app_upper }}_RETRY_DELAY_S  — Base delay between retries in seconds (default: 1.0)
+{% if governance_mode != "stateless" %}
+        {{ app_upper }}_SESSION_TTL    — Session TTL in minutes (default: 60)
+{% endif %}
+{% if governance_mode == "full" %}
+        {{ app_upper }}_TRUST_TIER     — Requested trust tier (default: 1)
+{% endif %}
+    """
+
+    base_url: str = ""
+    agent_class: str = "default_agent"
+    timeout_s: float = 30.0
+    retries: int = 2
+    retry_delay_s: float = 1.0
+{% if governance_mode != "stateless" %}
+    session_ttl_minutes: int = 60
+{% endif %}
+{% if governance_mode == "full" %}
+    trust_tier: int = 1
+{% endif %}
+
+    def __post_init__(self):
+        if not self.base_url:
+            self.base_url = "http://localhost:{{ default_port }}"
+
+    @classmethod
+    def from_env(cls) -> "{{ app_pascal }}Config":
+        """Build config from environment variables."""
+        return cls(
+            base_url=os.environ.get("{{ app_upper }}_BASE_URL", "http://localhost:{{ default_port }}"),
+            agent_class=os.environ.get("{{ app_upper }}_AGENT_CLASS", "default_agent"),
+            timeout_s=float(os.environ.get("{{ app_upper }}_TIMEOUT_S", "30")),
+            retries=int(os.environ.get("{{ app_upper }}_RETRIES", "2")),
+            retry_delay_s=float(os.environ.get("{{ app_upper }}_RETRY_DELAY_S", "1.0")),
+{% if governance_mode != "stateless" %}
+            session_ttl_minutes=int(os.environ.get("{{ app_upper }}_SESSION_TTL", "60")),
+{% endif %}
+{% if governance_mode == "full" %}
+            trust_tier=int(os.environ.get("{{ app_upper }}_TRUST_TIER", "1")),
+{% endif %}
+        )

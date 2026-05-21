@@ -1,0 +1,12 @@
+services:
+  example-service:
+    build:
+      context: .
+      dockerfile: services/example_service/Dockerfile
+    container_name: mfs-example-service
+    environment:
+      MFS_EXAMPLE_PORT: "8610"
+      MFS_EXAMPLE_PROVIDER: "stub"
+      MFS_LOG_LEVEL: "INFO"
+    ports:
+      - "8610:8610"

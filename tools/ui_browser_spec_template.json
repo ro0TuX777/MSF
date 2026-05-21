@@ -1,0 +1,24 @@
+{
+  "name": "example-browser-parity",
+  "base_url": "http://localhost:8502",
+  "headless": true,
+  "default_timeout_ms": 8000,
+  "checks": [
+    {
+      "name": "landing-page-loads",
+      "path": "/",
+      "steps": [
+        {"action": "expect_text", "text": "Welcome"}
+      ]
+    },
+    {
+      "name": "feature-route-and-action",
+      "path": "/",
+      "steps": [
+        {"action": "wait_for_selector", "selector": "button"},
+        {"action": "click", "selector": "button"},
+        {"action": "wait_ms", "value": 1000}
+      ]
+    }
+  ]
+}

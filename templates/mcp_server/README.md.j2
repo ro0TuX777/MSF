@@ -1,0 +1,81 @@
+# MCP Server: {{ service_name }}
+
+Auto-generated MCP server wrapping the **{{ service_name }}** MFS microservice.
+
+## Quick Start
+
+### 1. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Start the MFS service
+```bash
+# From the MFS root:
+docker compose up -d --build
+```
+
+### 3. Run the MCP server
+```bash
+# stdio transport (for Claude Desktop, Codex, etc.)
+python server.py
+
+# SSE transport (for web-based MCP clients)
+python server.py --transport sse --port {{ mcp_port }}
+```
+
+### 4. Connect from Claude Desktop
+Add to your Claude Desktop MCP config (`claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "{{ feature_slug }}": {
+      "command": "python",
+      "args": ["{{ output_path }}/server.py"]
+    }
+  }
+}
+```
+
+### 5. Use with EasyMCP (complementary path)
+```bash
+easymcp create {{ feature_slug }} \
+  --openapi {{ output_path }}/openapi.json \
+  --port {{ mcp_port }}
+
+easymcp start {{ feature_slug }}
+easymcp agent install codex {{ feature_slug }}
+```
+
+## Available MCP Tools
+
+| Tool | Description |
+|---|---|
+| `health_check` | Check service health status |
+| `get_capabilities` | Discover service capabilities and contract |
+{% for endpoint in extra_endpoints %}| `{{ endpoint.tool_name }}` | {{ endpoint.description }} |
+{% endfor %}
+
+## Available MCP Resources
+
+| URI | Description |
+|---|---|
+| `service://{{ feature_slug }}/contract` | MFS contract definition |
+| `service://{{ feature_slug }}/info` | Service metadata |
+
+## Environment Variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `{{ env_prefix }}_BASE_URL` | `{{ default_base_url }}` | MFS service URL |
+| `{{ env_prefix }}_TOKEN` | *(empty)* | Bearer token for service auth |
+| `{{ env_prefix }}_TIMEOUT_S` | `10` | HTTP timeout in seconds |
+| `MCP_TRANSPORT` | `stdio` | MCP transport: stdio, sse, streamable-http |
+| `MCP_PORT` | `{{ mcp_port }}` | Port for SSE/HTTP transport |
+
+## Docker
+
+```bash
+docker build -t mcp-{{ feature_slug }} .
+docker run -e {{ env_prefix }}_BASE_URL=http://host.docker.internal:{{ service_port }} mcp-{{ feature_slug }}
+```

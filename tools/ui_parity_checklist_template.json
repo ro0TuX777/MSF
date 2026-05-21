@@ -1,0 +1,34 @@
+﻿{
+  "feature": "example-feature",
+  "environment": "dev",
+  "items": [
+    {
+      "id": "ui-route-loads",
+      "description": "Existing feature route renders without frontend errors",
+      "critical": true,
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "id": "button-flow",
+      "description": "Primary action button behavior matches pre-migration UX",
+      "critical": true,
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "id": "error-state",
+      "description": "Error banner/message is displayed consistently on service failure",
+      "critical": false,
+      "status": "todo",
+      "notes": ""
+    },
+    {
+      "id": "metadata-display",
+      "description": "Status/source/error metadata remains visible to user",
+      "critical": false,
+      "status": "todo",
+      "notes": ""
+    }
+  ]
+}

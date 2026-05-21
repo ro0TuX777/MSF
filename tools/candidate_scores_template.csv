@@ -1,0 +1,3 @@
+﻿name,business_impact,blast_radius,reliability_pain,change_velocity,dependency_weight,api_boundary_clarity,ui_coupling,extraction_complexity,test_coverage_confidence
+example-search,8,7,6,6,7,8,3,4,6
+example-reporting,6,5,4,3,5,7,2,3,8

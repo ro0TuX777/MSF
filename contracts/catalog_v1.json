@@ -1,0 +1,17 @@
+{
+  "service": "product_catalog",
+  "version": "1.0",
+  "endpoints": {
+    "GET": {
+      "/api/products": {
+        "description": "Public product catalog read-only endpoint",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of products"
+          }
+        }
+      }
+    }
+  }
+}

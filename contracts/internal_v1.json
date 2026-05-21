@@ -1,0 +1,17 @@
+{
+  "service": "internal_metrics",
+  "version": "1.0",
+  "endpoints": {
+    "GET": {
+      "/api/health": {
+        "description": "Internal health metrics, read-only",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "System health metrics"
+          }
+        }
+      }
+    }
+  }
+}

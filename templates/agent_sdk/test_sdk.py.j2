@@ -1,0 +1,372 @@
+"""{{ app_name }} SDK unit tests — mocked HTTP, no live server required.
+
+Tests cover:
+  - Config loading from env vars
+  - Error classification and agent_should guidance
+{% if governance_mode != "stateless" %}
+  - Client session lifecycle (create, refresh, auto-retry)
+{% endif %}
+  - Action methods
+  - Graceful degradation (connection failures, timeouts)
+  - Context manager protocol
+"""
+
+from __future__ import annotations
+
+import os
+import sys
+from unittest.mock import MagicMock, patch
+
+import pytest
+import requests
+
+# Ensure the SDK package is importable
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# TIER 0: Config
+# ═══════════════════════════════════════════════════════════════════
+
+class Test{{ app_pascal }}Config:
+    def test_defaults(self):
+        from {{ app_slug }}_sdk.config import {{ app_pascal }}Config
+        cfg = {{ app_pascal }}Config()
+        assert cfg.base_url == "http://localhost:{{ default_port }}"
+        assert cfg.agent_class == "default_agent"
+        assert cfg.timeout_s == 30.0
+        assert cfg.retries == 2
+
+    def test_from_env(self, monkeypatch):
+        from {{ app_slug }}_sdk.config import {{ app_pascal }}Config
+        monkeypatch.setenv("{{ app_upper }}_BASE_URL", "http://custom:9000")
+        monkeypatch.setenv("{{ app_upper }}_AGENT_CLASS", "my_agent")
+        monkeypatch.setenv("{{ app_upper }}_TIMEOUT_S", "15")
+        monkeypatch.setenv("{{ app_upper }}_RETRIES", "5")
+        cfg = {{ app_pascal }}Config.from_env()
+        assert cfg.base_url == "http://custom:9000"
+        assert cfg.agent_class == "my_agent"
+        assert cfg.timeout_s == 15.0
+        assert cfg.retries == 5
+
+    def test_explicit_base_url_overrides_env(self, monkeypatch):
+        from {{ app_slug }}_sdk.config import {{ app_pascal }}Config
+        monkeypatch.setenv("{{ app_upper }}_BASE_URL", "http://from-env:9000")
+        cfg = {{ app_pascal }}Config(base_url="http://explicit:8000")
+        assert cfg.base_url == "http://explicit:8000"
+
+
+# ═══════════════════════════════════════════════════════════════════
+# TIER 1: Error Classification
+# ═══════════════════════════════════════════════════════════════════
+
+class TestErrorClassification:
+    def test_raise_for_ok_response(self):
+        from {{ app_slug }}_sdk.errors import raise_for_error
+        # Should not raise
+        raise_for_error({"ok": True, "data": "test"})
+
+{% if governance_mode != "stateless" %}
+    def test_raise_session_expired(self):
+        from {{ app_slug }}_sdk.errors import raise_for_error, SessionExpiredError
+        with pytest.raises(SessionExpiredError) as exc_info:
+            raise_for_error({
+                "ok": False,
+                "error": {"code": "SESSION_EXPIRED", "message": "TTL elapsed"},
+            })
+        assert exc_info.value.code == "SESSION_EXPIRED"
+        assert "session" in exc_info.value.agent_should.lower()
+
+{% endif %}
+{% if governance_mode == "full" %}
+    def test_raise_budget_exceeded(self):
+        from {{ app_slug }}_sdk.errors import raise_for_error, BudgetExceededError
+        with pytest.raises(BudgetExceededError):
+            raise_for_error({
+                "ok": False,
+                "error": {"code": "BUDGET_EXCEEDED", "message": "No budget"},
+            })
+
+    def test_raise_trust_insufficient(self):
+        from {{ app_slug }}_sdk.errors import raise_for_error, TrustInsufficientError
+        with pytest.raises(TrustInsufficientError):
+            raise_for_error({
+                "ok": False,
+                "error": {"code": "TRUST_INSUFFICIENT", "message": "Not authorized"},
+            })
+
+    def test_raise_guard_failed(self):
+        from {{ app_slug }}_sdk.errors import raise_for_error, GuardFailedError
+        with pytest.raises(GuardFailedError):
+            raise_for_error({
+                "ok": False,
+                "error": {"code": "GUARD_FAILED", "message": "Precondition not met"},
+            })
+
+{% endif %}
+    def test_raise_action_not_found(self):
+        from {{ app_slug }}_sdk.errors import raise_for_error, ActionNotFoundError
+        with pytest.raises(ActionNotFoundError):
+            raise_for_error({
+                "ok": False,
+                "error": {"code": "ACTION_NOT_FOUND", "message": "No such action"},
+            })
+
+    def test_raise_unknown_code(self):
+        from {{ app_slug }}_sdk.errors import raise_for_error, {{ app_pascal }}Error
+        with pytest.raises({{ app_pascal }}Error):
+            raise_for_error({
+                "ok": False,
+                "error": {"code": "SOMETHING_NEW", "message": "Unknown"},
+            })
+
+    def test_all_errors_have_agent_should(self):
+        from {{ app_slug }}_sdk.errors import (
+{% if governance_mode != "stateless" %}
+            SessionExpiredError, SessionNotFoundError,
+{% endif %}
+{% if governance_mode == "full" %}
+            BudgetExceededError, CircuitOpenError, TrustInsufficientError,
+            GuardFailedError,
+{% endif %}
+            ActionNotFoundError, InvalidParametersError,
+            ExecutionFailedError, ServiceUnavailableError,
+        )
+        for cls in [
+{% if governance_mode != "stateless" %}
+            SessionExpiredError, SessionNotFoundError,
+{% endif %}
+{% if governance_mode == "full" %}
+            BudgetExceededError, CircuitOpenError, TrustInsufficientError,
+            GuardFailedError,
+{% endif %}
+            ActionNotFoundError, InvalidParametersError,
+            ExecutionFailedError, ServiceUnavailableError,
+        ]:
+            err = cls()
+            assert err.agent_should, f"{cls.__name__} has no agent_should guidance"
+
+    def test_error_to_dict(self):
+        from {{ app_slug }}_sdk.errors import {{ app_pascal }}Error
+        err = {{ app_pascal }}Error(code="TEST", message="test error", agent_should="do something")
+        d = err.to_dict()
+        assert d["code"] == "TEST"
+        assert d["message"] == "test error"
+        assert "agent_should" in d
+
+
+{% if governance_mode != "stateless" %}
+# ═══════════════════════════════════════════════════════════════════
+# TIER 2: Client Session Lifecycle
+# ═══════════════════════════════════════════════════════════════════
+
+class TestClientSession:
+    """Client session creation, refresh, and auto-retry."""
+
+    def _mock_response(self, json_data, status_code=200):
+        resp = MagicMock(spec=requests.Response)
+        resp.json.return_value = json_data
+        resp.status_code = status_code
+        return resp
+
+    def test_ensure_session_creates_new(self):
+        from {{ app_slug }}_sdk import {{ app_pascal }}Client
+        client = {{ app_pascal }}Client("http://fake:{{ default_port }}")
+        mock_resp = self._mock_response({
+            "ok": True, "{{ session_id_field }}": "sess-123",
+            "agent_class": "default_agent",
+        })
+        with patch.object(client._http, "request", return_value=mock_resp):
+            sid = client.ensure_session()
+        assert sid == "sess-123"
+        assert client.session_id == "sess-123"
+
+    def test_ensure_session_reuses_existing(self):
+        from {{ app_slug }}_sdk import {{ app_pascal }}Client
+        client = {{ app_pascal }}Client("http://fake:{{ default_port }}")
+        client._session_id = "existing-session"
+        sid = client.ensure_session()
+        assert sid == "existing-session"
+
+    def test_ensure_session_force_creates_new(self):
+        from {{ app_slug }}_sdk import {{ app_pascal }}Client
+        client = {{ app_pascal }}Client("http://fake:{{ default_port }}")
+        client._session_id = "old-session"
+        mock_resp = self._mock_response({
+            "ok": True, "{{ session_id_field }}": "new-sess",
+            "agent_class": "default_agent",
+        })
+        with patch.object(client._http, "request", return_value=mock_resp):
+            sid = client.ensure_session(force=True)
+        assert sid == "new-sess"
+
+    def test_auto_session_on_expired(self):
+        """Client should auto-create a new session when the old one expires."""
+        from {{ app_slug }}_sdk import {{ app_pascal }}Client
+        client = {{ app_pascal }}Client("http://fake:{{ default_port }}")
+        client._session_id = "expired-sess"
+
+        call_count = [0]
+
+        def side_effect(method, url, **kwargs):
+            call_count[0] += 1
+            if call_count[0] == 1:
+                return self._mock_response({
+                    "ok": False,
+                    "error": {"code": "SESSION_EXPIRED", "message": "Expired"},
+                })
+            elif call_count[0] == 2:
+                return self._mock_response({
+                    "ok": True, "{{ session_id_field }}": "new-sess",
+                    "agent_class": "default_agent",
+                })
+            else:
+                return self._mock_response({
+                    "ok": True, "data": {"result": "success"},
+                })
+
+        with patch.object(client._http, "request", side_effect=side_effect):
+            result = client.submit_intent("test_action", {"key": "value"})
+        assert result["ok"]
+        assert client.session_id == "new-sess"
+
+    def test_refresh_session(self):
+        from {{ app_slug }}_sdk import {{ app_pascal }}Client
+        client = {{ app_pascal }}Client("http://fake:{{ default_port }}")
+        client._session_id = "sess-abc"
+        mock_resp = self._mock_response({
+            "ok": True, "{{ session_id_field }}": "sess-abc",
+            "extensions_count": 1,
+        })
+        with patch.object(client._http, "request", return_value=mock_resp):
+            result = client.refresh_session()
+        assert result["ok"]
+
+{% endif %}
+
+# ═══════════════════════════════════════════════════════════════════
+# TIER 3: Action Methods
+# ═══════════════════════════════════════════════════════════════════
+
+class TestActionMethods:
+
+    def _make_client(self):
+        from {{ app_slug }}_sdk import {{ app_pascal }}Client
+{% if governance_mode != "stateless" %}
+        client = {{ app_pascal }}Client("http://fake:{{ default_port }}", auto_session=False)
+        client._session_id = "test-sess"
+{% else %}
+        client = {{ app_pascal }}Client("http://fake:{{ default_port }}")
+{% endif %}
+        return client
+
+    def _mock_response(self, json_data):
+        resp = MagicMock(spec=requests.Response)
+        resp.json.return_value = json_data
+        resp.status_code = 200
+        return resp
+
+{% for action in actions %}
+    def test_{{ action.name }}(self):
+        client = self._make_client()
+        mock_resp = self._mock_response({"ok": True, "data": {"result": "success"}})
+        with patch.object(client._http, "request", return_value=mock_resp) as mock_req:
+            result = client.{{ action.name }}({{ action.test_args }})
+        assert result["ok"]
+{% if action.intent_action %}
+        body = mock_req.call_args[1]["json"]
+        assert body["action"] == "{{ action.intent_action }}"
+{% endif %}
+
+{% endfor %}
+
+# ═══════════════════════════════════════════════════════════════════
+# TIER 4: Graceful Degradation
+# ═══════════════════════════════════════════════════════════════════
+
+class TestGracefulDegradation:
+
+    def test_connection_error_raises_service_unavailable(self):
+        from {{ app_slug }}_sdk import {{ app_pascal }}Client
+        from {{ app_slug }}_sdk.errors import ServiceUnavailableError
+        client = {{ app_pascal }}Client("http://unreachable:{{ default_port }}")
+        client._cfg.retries = 0
+        client._cfg.retry_delay_s = 0
+        with patch.object(
+            client._http, "request",
+            side_effect=requests.ConnectionError("refused"),
+        ):
+            with pytest.raises(ServiceUnavailableError) as exc_info:
+                client._request("GET", "/health")
+            assert "unreachable" in str(exc_info.value)
+
+    def test_timeout_raises_service_unavailable(self):
+        from {{ app_slug }}_sdk import {{ app_pascal }}Client
+        from {{ app_slug }}_sdk.errors import ServiceUnavailableError
+        client = {{ app_pascal }}Client("http://slow:{{ default_port }}")
+        client._cfg.retries = 0
+        client._cfg.retry_delay_s = 0
+        with patch.object(
+            client._http, "request",
+            side_effect=requests.Timeout("timed out"),
+        ):
+            with pytest.raises(ServiceUnavailableError):
+                client._request("GET", "/health")
+
+    def test_health_returns_false_on_failure(self):
+        from {{ app_slug }}_sdk import {{ app_pascal }}Client
+        client = {{ app_pascal }}Client("http://down:{{ default_port }}")
+        with patch.object(
+            client._http, "get",
+            side_effect=requests.ConnectionError("refused"),
+        ):
+            assert client.health() is False
+
+    def test_health_returns_true_on_success(self):
+        from {{ app_slug }}_sdk import {{ app_pascal }}Client
+        client = {{ app_pascal }}Client("http://up:{{ default_port }}")
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        with patch.object(client._http, "get", return_value=mock_resp):
+            assert client.health() is True
+
+
+# ═══════════════════════════════════════════════════════════════════
+# TIER 5: Context Manager and Repr
+# ═══════════════════════════════════════════════════════════════════
+
+class TestClientProtocol:
+
+    def test_context_manager(self):
+        from {{ app_slug }}_sdk import {{ app_pascal }}Client
+{% if governance_mode != "stateless" %}
+        mock_resp = MagicMock(spec=requests.Response)
+        mock_resp.json.return_value = {
+            "ok": True, "{{ session_id_field }}": "ctx-sess",
+            "agent_class": "default_agent",
+        }
+        client = {{ app_pascal }}Client("http://fake:{{ default_port }}")
+        with patch.object(client._http, "request", return_value=mock_resp):
+            with client as c:
+                assert c.session_id == "ctx-sess"
+{% else %}
+        client = {{ app_pascal }}Client("http://fake:{{ default_port }}")
+        with client as c:
+            assert c is not None
+{% endif %}
+
+    def test_repr(self):
+        from {{ app_slug }}_sdk import {{ app_pascal }}Client
+        client = {{ app_pascal }}Client("http://test:{{ default_port }}")
+        r = repr(client)
+        assert "{{ app_pascal }}Client" in r
+        assert "http://test:{{ default_port }}" in r
+        assert "default_agent" in r
+
+    def test_client_with_explicit_agent_class(self):
+        from {{ app_slug }}_sdk import {{ app_pascal }}Client
+        client = {{ app_pascal }}Client("http://test:{{ default_port }}", agent_class="scanner_bot")
+        assert client._cfg.agent_class == "scanner_bot"
+        assert "scanner_bot" in repr(client)

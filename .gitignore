@@ -1,0 +1,13 @@
+# Generated outputs
+mcp_servers/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

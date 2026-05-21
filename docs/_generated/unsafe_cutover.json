@@ -1,0 +1,52 @@
+{
+  "feature": "unsafe_module",
+  "service": "internal-metrics-service",
+  "environment": "dev",
+  "flag": {
+    "name": "MFS_INTERNAL_METRICS_ROLLOUT_PERCENT",
+    "mode": "percentage"
+  },
+  "gates": {
+    "ui_parity_checklist": "",
+    "ui_smoke_spec": "",
+    "ui_browser_spec": "",
+    "ui_checklist_fail_on_todo": false
+  },
+  "integrations": {
+    "governance": {
+      "type": "http",
+      "url": "http://127.0.0.1:8081/api/v1/admit"
+    }
+  },
+  "stages": [
+    {
+      "name": "canary_5",
+      "percent": 5,
+      "deploy_command": "echo Deploy internal-metrics-service for 5%",
+      "verify_command": "echo Verify health and error budget",
+      "rollback_command": "echo Rollback internal-metrics-service to previous stable"
+    },
+    {
+      "name": "canary_25",
+      "percent": 25,
+      "deploy_command": "echo Deploy internal-metrics-service for 25%",
+      "verify_command": "echo Verify health and latency",
+      "rollback_command": "echo Rollback internal-metrics-service to previous stable"
+    },
+    {
+      "name": "full_100",
+      "percent": 100,
+      "deploy_command": "echo Deploy internal-metrics-service for 100%",
+      "verify_command": "echo Verify production readiness",
+      "rollback_command": "echo Rollback internal-metrics-service to previous stable"
+    }
+  ],
+  "global_rollback_command": "echo Global rollback for internal-metrics-service",
+  "notes": "Update commands, adapters, hooks, and SLO policy for your deployment stack before using --execute.",
+  "risk_profile": {
+    "data_sensitivity": "low",
+    "governance_risk": "standard",
+    "sensitive_domains": []
+  },
+  "shadow_log_dir": "shadow"
+}
