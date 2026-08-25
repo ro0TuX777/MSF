@@ -1,0 +1,11 @@
+{
+  "journey_id": "save-customer-happy-path",
+  "steps": [
+    {"action": "set", "target": "customer/form/name", "value": "Jane Smith"},
+    {"action": "select", "target": "customer/form/type", "value": "business"},
+    {"action": "toggle", "target": "customer/form/notifications"},
+    {"action": "click", "target": "customer/form/save"},
+    {"action": "wait", "target": "customer/form/status", "state": "saved", "timeout_ms": 3000},
+    {"action": "expect", "target": "customer/form/status", "state": "saved"}
+  ]
+}

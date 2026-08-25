@@ -1,0 +1,18 @@
+{
+  "$schema": "msf.semantic_ui_contract.v1",
+  "schema_version": "msf.semantic_ui_contract.v1",
+  "app": "semantic-ui-demo",
+  "controls": {
+    "customer/form/name": {"type": "input", "actions": ["set", "clear", "focus"], "states": ["empty", "populated"], "sensitive": true},
+    "customer/form/type": {"type": "select", "actions": ["select"], "states": ["unselected", "selected"]},
+    "customer/form/notifications": {"type": "toggle", "actions": ["toggle"], "states": ["checked", "unchecked"]},
+    "customer/form/save": {"type": "button", "actions": ["click"], "states": ["enabled", "disabled"]},
+    "customer/form/status": {"type": "region", "actions": [], "states": ["ready", "saving", "saved", "error"]},
+    "customer/form/validation/name": {"type": "region", "actions": [], "states": ["clear", "error"]},
+    "customer/form/details": {"type": "disclosure", "actions": ["toggle"], "states": ["expanded", "collapsed"]},
+    "customer/form/panel": {"type": "region", "actions": [], "states": ["expanded", "collapsed"]},
+    "customer/form/content": {"type": "region", "actions": [], "states": ["visible", "hidden"]},
+    "customer/navigation/profile": {"type": "tab", "actions": ["click"], "states": ["active", "inactive"]},
+    "customer/navigation/notes": {"type": "tab", "actions": ["click"], "states": ["active", "inactive"]}
+  }
+}

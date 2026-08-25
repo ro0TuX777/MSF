@@ -1,0 +1,8 @@
+{
+  "journey_id": "save-customer-validation-failure",
+  "steps": [
+    {"action": "click", "target": "customer/form/save"},
+    {"action": "expect", "target": "customer/form/validation/name", "state": "error"},
+    {"action": "expect", "target": "customer/form/status", "state": "error"}
+  ]
+}

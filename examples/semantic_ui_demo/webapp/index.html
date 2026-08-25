@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MSF Semantic UI Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <p class="eyebrow">MSF reference application</p>
+      <h1>Customer profile</h1>
+      <p class="lede">A small host page instrumented with semantic identity and state.</p>
+    </header>
+
+    <nav class="tabs" aria-label="Customer sections">
+      <button type="button" class="tab active" data-msf-id="customer/navigation/profile" data-msf-state="active">Profile</button>
+      <button type="button" class="tab" data-msf-id="customer/navigation/notes" data-msf-state="inactive">Notes</button>
+    </nav>
+
+    <section class="panel" data-msf-id="customer/form/panel" data-msf-state="expanded">
+      <button type="button" class="panel-heading" data-msf-id="customer/form/details" data-msf-state="expanded" aria-expanded="true">Customer details <span aria-hidden="true">-</span></button>
+      <div class="panel-body" data-msf-id="customer/form/content" data-msf-state="visible">
+        <label for="customer-name">Customer name</label>
+        <input id="customer-name" type="text" data-msf-id="customer/form/name" data-msf-state="empty">
+
+        <label for="customer-type">Customer type</label>
+        <select id="customer-type" data-msf-id="customer/form/type" data-msf-state="unselected">
+          <option value="">Choose a type</option>
+          <option value="residential">Residential</option>
+          <option value="business">Business</option>
+        </select>
+
+        <label class="switch-label">
+          <input type="checkbox" data-msf-id="customer/form/notifications" data-msf-state="unchecked">
+          <span class="switch" aria-hidden="true"></span>
+          Enable notifications
+        </label>
+
+        <div class="actions">
+          <button type="button" class="save" data-msf-id="customer/form/save" data-msf-state="enabled">Save customer</button>
+        </div>
+        <div role="status" class="status" data-msf-id="customer/form/status" data-msf-state="ready">Ready</div>
+        <div class="validation" data-msf-id="customer/form/validation/name" data-msf-state="clear" aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

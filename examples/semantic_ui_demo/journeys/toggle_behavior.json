@@ -1,0 +1,10 @@
+{
+  "journey_id": "customer-details-toggle",
+  "steps": [
+    {"action": "expect", "target": "customer/form/details", "state": "expanded"},
+    {"action": "toggle", "target": "customer/form/details"},
+    {"action": "expect", "target": "customer/form/details", "state": "collapsed"},
+    {"action": "toggle", "target": "customer/form/details"},
+    {"action": "expect", "target": "customer/form/details", "state": "expanded"}
+  ]
+}
