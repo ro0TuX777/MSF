@@ -9,7 +9,16 @@
       "health_path": "/health",
       "contract_path": "/v1/example/capabilities",
       "contract_file": "contracts/example_v1.json"
+    },
+    {
+      "name": "scanners-service",
+      "base_url_envs": [
+        "MFS_SCANNERS_BASE_URL"
+      ],
+      "default_base_url": "http://localhost:8620",
+      "health_path": "/health",
+      "contract_path": "/v1/scanners/capabilities",
+      "contract_file": "contracts/scanners_v1.json"
     }
   ]
 }
-

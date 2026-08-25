@@ -190,6 +190,35 @@ python tools/ui_smoke_runner.py --spec tools/ui_smoke_spec_template.json
 Guide:
 - `docs/UI_PARITY_HARNESS.md`
 
+## Semantic UI Retrofit
+The semantic UI workflow lets an existing application adopt stable MSF control identities and explicit UI states without coupling journeys to DOM selectors. The runtime probe can inspect rendered controls, observe browser events, match controls to an approved contract, and report missing or unknown identities:
+```bash
+python tools/semantic_retrofit.py --url file:///absolute/path/to/app/index.html --contract examples/semantic_ui_demo/demo_ui_contract.json --output retrofit_report.json
+```
+
+Before instrumentation, inventory common controls in HTML, JSX, TSX, and Vue source files. The report includes source locations, labels, DOM IDs, handler attributes, state evidence, inferred actions, and reviewable semantic ID proposals:
+```bash
+python tools/semantic_retrofit.py --source-dir <legacy-app>/src --contract examples/semantic_ui_demo/demo_ui_contract.json --output source_retrofit_report.json
+```
+
+Approved mappings can be rendered as a unified diff and applied explicitly. Approval files are keyed by the reported relative file and line:
+```json
+{
+   "approvals": {
+      "components/CustomerForm.tsx:12": {
+         "semantic_id": "customer/form/save",
+         "state": "enabled"
+      }
+   }
+}
+```
+```bash
+python tools/semantic_retrofit.py --source-dir <legacy-app>/src --contract examples/semantic_ui_demo/demo_ui_contract.json --approval approvals.json --patch retrofit.patch
+python tools/semantic_retrofit.py --source-dir <legacy-app>/src --contract examples/semantic_ui_demo/demo_ui_contract.json --approval approvals.json --patch retrofit.patch --apply
+```
+
+The default is a dry run. Only approved `data-msf-id` and initial `data-msf-state` attributes are materialized. Framework-specific state-machine reconstruction, deeper handler analysis, and richer state-update instrumentation remain adapter work for React, Vue, and Angular.
+
 Pre-promote UI gates (optional):
 ```bash
 python tools/cutover_orchestrator.py promote --manifest docs/_generated/sentiment_analysis_cutover.json --stage canary_5 --ui-checklist tools/ui_parity_checklist_template.json --ui-smoke-spec tools/ui_smoke_spec_template.json

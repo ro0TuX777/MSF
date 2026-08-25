@@ -1,6 +1,12 @@
 from pathlib import Path
 
-from tools.semantic_retrofit import discover_runtime, propose_id
+from tools.semantic_retrofit import (
+    apply_instrumentation_plan,
+    build_instrumentation_plan,
+    discover_runtime,
+    discover_source,
+    propose_id,
+)
 from tools.semantic_ui_coverage import validate_coverage
 from tools.semantic_ui_validator import load_json
 
@@ -82,3 +88,43 @@ def test_unknown_identity_and_invalid_state_are_coverage_failures():
 def test_id_proposals_are_deterministic_and_domain_reviewable():
     assert propose_id("Submit invoice", "invoice/search") == "invoice/search/submit-invoice"
     assert propose_id("", "invoice") == "invoice"
+
+
+def test_source_discovery_reports_evidence_and_reviewable_proposals(tmp_path):
+    source = tmp_path / "CustomerForm.tsx"
+    source.write_text(
+        '<button id="saveCustomerBtn" onClick="saveCustomer">Save customer</button>\n'
+        '<input name="customerName" aria-label="Customer name" />\n',
+        encoding="utf-8",
+    )
+
+    report = discover_source(tmp_path, CONTRACT)
+
+    assert report["schema_version"] == "msf.semantic_source_report.v1"
+    save = report["candidates"][0]
+    assert save["source"] == {"file": "CustomerForm.tsx", "line": 1}
+    assert save["label"] == "Save customer"
+    assert save["evidence"]["handler_hints"] == ["onclick"]
+    name = report["candidates"][1]
+    assert name["proposed_semantic_id"] == "review/customer-name"
+    assert name["approval"] == "required"
+    assert report["review_required"] is True
+
+
+def test_approved_instrumentation_is_dry_run_then_applyable(tmp_path):
+    source = tmp_path / "form.html"
+    source.write_text('<button id="save">Save customer</button>\n', encoding="utf-8")
+    report = discover_source(tmp_path, CONTRACT)
+    approvals = {"form.html:1": {"semantic_id": "customer/form/save", "state": "enabled"}}
+
+    plan = build_instrumentation_plan(report, approvals)
+    assert plan["schema_version"] == "msf.semantic_instrumentation_plan.v1"
+    diff = apply_instrumentation_plan(tmp_path, plan)
+    assert 'data-msf-id="customer/form/save"' in diff
+    assert 'data-msf-state="enabled"' in diff
+    assert 'data-msf-id' not in source.read_text(encoding="utf-8")
+
+    apply_instrumentation_plan(tmp_path, plan, dry_run=False)
+    instrumented = source.read_text(encoding="utf-8")
+    assert 'data-msf-id="customer/form/save"' in instrumented
+    assert 'data-msf-state="enabled"' in instrumented

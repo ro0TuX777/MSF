@@ -49,6 +49,34 @@ python tools/semantic_ui_coverage.py --url file:///absolute/path/to/MSF/examples
 
 The coverage check fails when an approved contract control is not rendered, a rendered semantic ID is uncontracted, or a rendered semantic state is not declared. ID and state proposals are advisory; approval remains a developer decision and does not modify application code.
 
+The same probe can inventory source markup before the application is instrumented. It scans HTML, JSX, TSX, and Vue files for common controls and records line-numbered evidence such as DOM IDs, event-handler attributes, and state-related attributes:
+
+```bash
+python tools/semantic_retrofit.py --source-dir /absolute/path/to/legacy-app --contract examples/semantic_ui_demo/demo_ui_contract.json --output source_retrofit_report.json
+```
+
+Source proposals are evidence for review, not an automatic patch. Framework-specific handler and state-transition inference remain follow-up work; approved IDs and initial states can be materialized through the workflow below.
+
+Approved instrumentation can be generated as a diff and then applied explicitly. The approval file is keyed by the source-relative path and line reported by discovery:
+
+```json
+{
+	"approvals": {
+		"CustomerForm.tsx:12": {
+			"semantic_id": "customer/form/save",
+			"state": "enabled"
+		}
+	}
+}
+```
+
+```bash
+python tools/semantic_retrofit.py --source-dir /absolute/path/to/legacy-app --contract examples/semantic_ui_demo/demo_ui_contract.json --approval approvals.json --patch retrofit.patch
+python tools/semantic_retrofit.py --source-dir /absolute/path/to/legacy-app --contract examples/semantic_ui_demo/demo_ui_contract.json --approval approvals.json --patch retrofit.patch --apply
+```
+
+The first command is a dry run. Only approved semantic IDs and explicitly approved initial states are inserted; handler bodies and state transitions remain application-owned and require framework-specific follow-up instrumentation.
+
 ## Compose Journeys
 
 The contract-driven composer is a usability layer over the existing canonical journey object. It has no selectors or browser knowledge:
